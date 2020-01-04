@@ -39,8 +39,9 @@ Route::middleware(['auth'])->group(function(){
     Route::get('compra/exitosas','CompraController@exitosas');
     Route::get('compra/canceladas','CompraController@canceladas');
 
-    //CLIENTE
+    //CLIENTE Y CREDITO
     Route::get('cliente/detalle/{id}','ClienteController@detalleVentas');
+    Route::get('credito/cliente/{id}','CreditoController@ventasCredito')->name('credito.cliente');
 
     //EMPRESA
     Route::get('empresa','EmpresaController@edit');

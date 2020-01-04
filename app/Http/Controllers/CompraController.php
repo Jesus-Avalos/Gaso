@@ -126,7 +126,7 @@ class CompraController extends Controller
                 }
                 $compra = Compra::find($id);
                 $empresa = Empresa::find(1);
-                $empresa->egresos += $compra->total;
+                $empresa->egresos -= $compra->total;
                 $compra->status = 'Cancelada';
                 $compra->update();
             DB::commit();

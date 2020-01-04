@@ -13,12 +13,12 @@ class CreditoController extends Controller
 {
     public function index(){
 		$ventas = DB::select("
-			SELECT (v.total - SUM(c.total_pago)) AS deuda, v.*, SUM(c.total_pago) AS pagado, cl.nombre
+			SELECT count(v.id) AS numVentas, v.id, v.tipo, v.status, (SUM(v.total) - SUM(c.total_pago)) AS deuda, SUM(v.total) AS total, SUM(c.total_pago) AS pagado, cl.nombre,v.cliente_id
 			FROM ventas AS v
 			LEFT OUTER JOIN credito AS c ON c.venta_id = v.id
 			INNER JOIN clientes AS cl ON cl.id = v.cliente_id
 			WHERE v.status = 'Credito'
-			GROUP BY v.id
+			GROUP BY cl.id
 		");
 		$title = "Ventas pendientes de pago";
 		return view('creditos.index', compact('ventas','title'));
@@ -39,6 +39,20 @@ class CreditoController extends Controller
 		");
 
 		return view('creditos.create',compact('venta','cliente','abonos','datos'));
+	}
+
+	public function ventasCredito($id){
+		$ventas = DB::select("
+			SELECT v.id, v.tipo, v.status, (v.total - SUM(c.total_pago)) AS deuda, v.total, SUM(c.total_pago) AS pagado, cl.nombre,v.cliente_id
+			FROM ventas AS v
+			LEFT OUTER JOIN credito AS c ON c.venta_id = v.id
+			INNER JOIN clientes AS cl ON cl.id = v.cliente_id
+			WHERE v.status = 'Credito'
+			AND cl.id = ".$id."
+ 			GROUP BY v.id
+		");
+		$title = "Cliente " . $ventas[0]->nombre;
+		return view('creditos.show', compact('ventas','title'));
 	}
 
 	public function store(Request $request){

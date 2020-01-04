@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <table class="table table-bordered table-responsive gastoTable">
+            <table class="table table-bordered ingresoTable table-responsive">
                 <thead class="bg-dark">
                     <tr>
                         <th>Usuario</th>
@@ -12,12 +12,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <FilaGastos v-for="(item,index) in lista" 
+                    <FilaIngresos v-for="(item,index) in lista" 
                         :key="item.id" 
                         :index="index" 
                         :item="item"
                         @updateItem="updateItem"
-                        @deleteItem="deleteItem"></FilaGastos>
+                        @deleteItem="deleteItem"></FilaIngresos>
                 </tbody>
             </table>
         </div>
@@ -25,20 +25,20 @@
 </template>
 
 <script>
-import FilaGastos from './Fila.vue';
+import FilaIngresos from './Fila.vue';
 export default {
-    name: 'TableGastos',
+    name: 'TableIngresos',
     props: ['lista'],
     methods: {
         updateItem(params){
             this.$emit('updateItem',params);
         },
-        deleteItem(index){
-            this.$emit('deleteItem',index);
+        deleteItem(params){
+            this.$emit('deleteItem',params);
         }
     },
     components: {
-        FilaGastos
+        FilaIngresos
     }
 }
 </script>

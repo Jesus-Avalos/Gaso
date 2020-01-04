@@ -166,6 +166,14 @@
           </a>
         </li>
         <li class="nav-item">
+          <a href="/ingreso" class="nav-link">
+            <i class="nav-icon fas fa-arrow-up"></i>
+            <p>
+              Ingresos extra
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="/gasto" class="nav-link">
             <i class="nav-icon fas fa-arrow-down"></i>
             <p>

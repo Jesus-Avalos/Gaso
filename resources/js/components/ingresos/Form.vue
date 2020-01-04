@@ -3,11 +3,11 @@
         <form @submit.prevent="addNew" class="w-100 text-center">
             <div class="form-group">
                 <label>Monto*: </label>
-                <input type="number" v-model="monto" class="form-control text-center" :max="maximo" placeholder="Ingresa el monto del gasto" min="1" step="any" required>
+                <input type="number" v-model="monto" class="form-control text-center" placeholder="Ingresa el monto del ingreso" min="1" step="any" required>
             </div>
             <div class="form-group">
                 <label>Descripción*: </label>
-                <textarea v-model="descripcion" class="form-control" rows="3" placeholder="Ingresa descripción del gasto" required maxlength="200"></textarea>
+                <textarea v-model="descripcion" class="form-control" rows="3" placeholder="Ingresa descripción del ingreso" required maxlength="200"></textarea>
             </div>
             <div class="form-group text-center">
                 <button class="btn btn-primary">Registrar</button>
@@ -18,8 +18,7 @@
 
 <script>
 export default {
-    name: 'FormGastos',
-    props: ['maximo'],
+    name: 'FormIngresos',
     data(){
         return {
             monto: '',
@@ -32,7 +31,7 @@ export default {
                 monto : this.monto,
                 descripcion : this.descripcion
             };
-            await axios.post('/gasto',params).then(response => {
+            await axios.post('/ingreso',params).then(response => {
                 this.$emit('addNew',response.data);
                 $('.alert').html('Creado con éxito');
                 $('.alert').fadeToggle(2000);

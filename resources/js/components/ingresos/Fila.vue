@@ -16,14 +16,14 @@
             <button class="btn btn-sm btn-secondary" @click="editMode = false" v-if="editMode"><i class="fas fa-ban"></i></button>
             <button class="btn btn-sm btn-danger" @click="deleteModal = true" data-toggle="modal" :data-target="'#deleteModal'+item.id"><i class="fas fa-trash"></i></button>
         </td>
-        <ModalGastos @deleteItem="deleteItem" :item="item"></ModalGastos>
+        <ModalIngresos @deleteItem="deleteItem" :item="item"></ModalIngresos>
     </tr>
 </template>
 
 <script>
-import ModalGastos from './Modal.vue';
+import ModalIngresos from './Modal.vue';
 export default {
-    name: 'FilaGastos',
+    name: 'FilaIngresos',
     props: ['item','index'],
     data(){
         return {
@@ -34,30 +34,40 @@ export default {
     },
     methods: {
         async update(){
-            const params = {
+            const dataparams = {
                 index: this.index,
                 monto: this.monto,
                 descripcion: this.descripcion
             };
-            await axios.put('gasto/'+this.item.id, params).then(response => {
+            await axios.put('ingreso/'+this.item.id, dataparams).then(response => {
                 $('.alert').html('Actualizado con éxito');
                 $('.alert').fadeToggle(2000);
                 $('.alert').fadeToggle(2000);
+                const params = {
+                    index: this.index,
+                    monto: this.monto,
+                    descripcion: this.descripcion,
+                    data: response.data
+                };
                 this.$emit('updateItem',params);
             });
             this.editMode = false;
         },
         async deleteItem(){
-            await axios.delete('gasto/'+this.item.id).then(response => {
+            await axios.delete('ingreso/'+this.item.id).then(response => {
                 $('.alert').html('Eliminado con éxito');
                 $('.alert').fadeToggle(2000);
                 $('.alert').fadeToggle(2000);
+                const params = {
+                    index: this.index,
+                    data: response.data
+                }
+                this.$emit('deleteItem',params);
             });
-            this.$emit('deleteItem',this.index);
         }
     },
     components: {
-        ModalGastos
+        ModalIngresos
     }
 }
 </script>

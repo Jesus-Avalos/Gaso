@@ -12,9 +12,7 @@
                     <tr>
                         <th>Tipo</th>
                         <th>Folio</th>
-                        <th>Cliente</th>
                         <th>Status</th>
-                        <th>Ventas</th>
                         <th>Deuda</th>
                         <th>Total</th>
                         <th><i class="fa fa-wrench"></i></th>
@@ -25,13 +23,16 @@
                         <tr>
                             <td>{{ $venta->tipo}}</td>
                             <td> {{ $venta->id}} </td>
-                            <td>{{ $venta->nombre }}</td>
                             <td><small class="label label-warning">{{$venta->status}}</small></td>
-                            <td>{{ $venta->numVentas }}</td>
                             <td>{{ ($venta->pagado == null) ? $venta->total : $venta->deuda }}</td>
                             <td>{{ $venta->total }}</td>
                             <td>
-                                {{ link_to_route('credito.cliente', $title = "", $parameters = [$venta->cliente_id], $attributes = ["class"=>"btn fa fa-bars btn-primary btn-sm","title"=>"Ver detalles"]) }} 
+                                {{ link_to_route('credito.show', $title = "", $parameters = [$venta->id], $attributes = ["class"=>"btn fa fa-dollar-sign btn-info btn-sm","title"=>"Agregar crédito"]) }}
+                                {{ link_to_route('venta.show', $title = "", $parameters = [$venta->id], $attributes = ["class"=>"btn fa fa-bars btn-primary btn-sm","title"=>"Ver detalles"]) }}
+                                @can('ventas.edit')
+                                    <button class="btn btn-sm btn-warning" title="Ticket Cocina"><i class="fa fa-coffee"></i></button>
+                                    <button class="btn btn-sm btn-secondary" title="Ticket Cliente" onclick="ticketCompra({{ $venta->id }})"><i class="fa fa-user"></i></button>
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

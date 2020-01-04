@@ -20,6 +20,9 @@ Vue.component('fila-compras', require('./components/compras/Fila.vue').default);
 //GASTOS
 Vue.component('gastos-component', require('./components/gastos/Gastos.vue').default);
 
+//INGRESOS
+Vue.component('ingresos-component', require('./components/ingresos/Ingresos.vue').default);
+
 //COBROS
 Vue.component('cobro-component', require('./components/cobros/CobrosComponent.vue').default);
 Vue.component('modal-cobro-component', require('./components/cobros/ModalCobrosComponent.vue').default);

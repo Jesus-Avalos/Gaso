@@ -50,7 +50,7 @@ class CobroController extends Controller
 						$empresa->ingresos += $credito->total_pago;
 						$empresa->update();
 					}
-					$venta->status = ($adelanto == $venta->total)? 'Exitosa' : 'Credito';
+					$venta->status = ($adelanto == $venta->total) ? 'Exitosa' : 'Credito';
 				}else{
 					$venta->status = 'Exitosa';
 					$empresa = Empresa::find(1);

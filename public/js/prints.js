@@ -63,8 +63,6 @@ async function fprintProductos(data){
 							</div>
 						</div>
 					</div>`;
-		}else{
-			alert('Stock del producto en 0');
 		}
 	}
     $("#content01").append(cadena);
