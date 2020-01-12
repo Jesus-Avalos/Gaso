@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Venta;
 use App\Cliente;
 use App\Mesa;
+use App\Credito;
 use DB;
 
 class VentaController extends Controller
@@ -88,10 +89,19 @@ class VentaController extends Controller
 							->groupBy('dv.id')
 							->select('dv.cantidad','dv.precio_total','p.name','dp.precio')->get();
 
-        $cliente = Cliente::where('id','=',$venta->cliente_id)->get();
+		$cliente = Cliente::where('id','=',$venta->cliente_id)->get();
+		
+		$abonos = Credito::where('venta_id','=',$venta->id)->orderBy('id','DESC')->get();
 
-		return view('ventas.show', compact('venta','productos','cliente','mesa'));
-		// return $productos; 
+		$datos = DB::select("
+			SELECT (v.total - SUM(c.total_pago)) AS deuda, SUM(c.total_pago) AS pagado, v.total
+			FROM ventas AS v
+			LEFT OUTER JOIN credito AS c ON c.venta_id = v.id
+			AND v.id = ". $id ."
+		");
+
+		return view('ventas.show', compact('venta','productos','cliente','mesa','abonos','datos'));
+		// return $datos; 
 
     }
 }

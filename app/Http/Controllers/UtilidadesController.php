@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Cliente;
 use App\Producto;
+use App\Empresa;
 use App\User;
 use App\Mesa;
 use App\Venta;
@@ -41,7 +42,7 @@ class UtilidadesController extends Controller
 
 		if ($venta->mesa_id) {
 			$mesa = Mesa::find($venta->mesa_id);
-			$mesa->status = 2;
+				$mesa->status = 2;
 			$mesa->update();
 		}
 
@@ -70,9 +71,13 @@ class UtilidadesController extends Controller
 	{
 		if ($venta->mesa_id) {
 			$mesa = Mesa::find($venta->mesa_id);
-			$mesa->status = 2;
+				$mesa->status = 2;
 			$mesa->update();
 		}
+
+		$empresa = new Empresa;
+			$empresa->egreso += $venta->total;
+		$empresa->update();
 
 		$venta->update(["status" => "Cancelada"]);
 

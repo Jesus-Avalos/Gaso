@@ -24,7 +24,7 @@ class InventarioController extends Controller
 
     public function index()
     {
-        $articulos = Inventario::orderBy('id','DESC')->get();
+        $articulos = Inventario::where('status','=','Activo')->orderBy('id','DESC')->get();
 
         return view('inventario.index',compact('articulos'));
     }
@@ -146,7 +146,8 @@ class InventarioController extends Controller
     {
         $articulo = Inventario::find($id);
 
-        $articulo->delete();
+        $articulo->status = 'Inactivo';
+        $articulo->update();
 
         return redirect('/inventario')->with('status','Eliminado correctamente');
     }

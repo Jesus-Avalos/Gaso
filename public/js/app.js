@@ -3571,7 +3571,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -80990,26 +80989,22 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("div", [
-      _c(
-        "table",
-        { staticClass: "table table-bordered table-responsive gastoTable" },
-        [
-          _vm._m(0),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.lista, function(item, index) {
-              return _c("FilaGastos", {
-                key: item.id,
-                attrs: { index: index, item: item },
-                on: { updateItem: _vm.updateItem, deleteItem: _vm.deleteItem }
-              })
-            }),
-            1
-          )
-        ]
-      )
+    _c("div", { staticClass: "table-responsive" }, [
+      _c("table", { staticClass: "table table-bordered gastoTable" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c(
+          "tbody",
+          _vm._l(_vm.lista, function(item, index) {
+            return _c("FilaGastos", {
+              key: item.id,
+              attrs: { index: index, item: item },
+              on: { updateItem: _vm.updateItem, deleteItem: _vm.deleteItem }
+            })
+          }),
+          1
+        )
+      ])
     ])
   ])
 }
@@ -81329,13 +81324,7 @@ var render = function() {
       _c(
         "div",
         { staticClass: "col-12 col-md-6 " },
-        [
-          _vm.datos.caja_extra > 0
-            ? _c("FormIngresos", { on: { addNew: _vm.addNew } })
-            : _c("div", { staticClass: "alert alert-warning text-center" }, [
-                _c("h3", [_vm._v("Caja extra en 0")])
-              ])
-        ],
+        [_c("FormIngresos", { on: { addNew: _vm.addNew } })],
         1
       ),
       _vm._v(" "),
@@ -81466,26 +81455,22 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("div", [
-      _c(
-        "table",
-        { staticClass: "table table-bordered ingresoTable table-responsive" },
-        [
-          _vm._m(0),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.lista, function(item, index) {
-              return _c("FilaIngresos", {
-                key: item.id,
-                attrs: { index: index, item: item },
-                on: { updateItem: _vm.updateItem, deleteItem: _vm.deleteItem }
-              })
-            }),
-            1
-          )
-        ]
-      )
+    _c("div", { staticClass: "table-responsive" }, [
+      _c("table", { staticClass: "table table-bordered ingresoTable" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c(
+          "tbody",
+          _vm._l(_vm.lista, function(item, index) {
+            return _c("FilaIngresos", {
+              key: item.id,
+              attrs: { index: index, item: item },
+              on: { updateItem: _vm.updateItem, deleteItem: _vm.deleteItem }
+            })
+          }),
+          1
+        )
+      ])
     ])
   ])
 }

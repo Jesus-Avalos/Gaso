@@ -10,7 +10,6 @@
             <table class="table table-striped table-bordered dt-responsive nowrap" id="creditosTable" style="width: 100%">
                 <thead class="thead-dark">
                     <tr>
-                        <th>Tipo</th>
                         <th>Folio</th>
                         <th>Cliente</th>
                         <th>Status</th>
@@ -23,11 +22,10 @@
                 <tbody>
                     @foreach($ventas as $venta)
                         <tr>
-                            <td>{{ $venta->tipo}}</td>
                             <td> {{ $venta->id}} </td>
                             <td>{{ $venta->nombre }}</td>
                             <td><small class="label label-warning">{{$venta->status}}</small></td>
-                            <td>{{ $venta->numVentas }}</td>
+                            <td>{{ count($creditos) }}</td>
                             <td>{{ ($venta->pagado == null) ? $venta->total : $venta->deuda }}</td>
                             <td>{{ $venta->total }}</td>
                             <td>

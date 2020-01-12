@@ -12,6 +12,7 @@
   {{ Html::style('css/adminlte.min.css') }}
   {{ Html::style('css/box.css') }}
   {{ Html::style('css/datatables.min.css') }}
+  @yield('styles')
   
 
   <style>
@@ -26,6 +27,9 @@
 
   <script type="text/javascript">
     var APP_URL = {!! json_encode(url('/')) !!};
+    function goBack() {
+      window.history.back();
+    }
   </script>
 
   <script>

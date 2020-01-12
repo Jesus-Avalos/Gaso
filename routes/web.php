@@ -16,10 +16,15 @@ Route::get('/', function () {
 });
 
 Route::get('/temp',function (){
-    $tables =  ['productos','gastos','ventas','detalle_ventas','cortes','detalle_productos','categorias','subcategorias','clientes','credito','mesas','unidades'];
-    foreach ($tables as $value) {
+    $tablas = ['ventas','detalle_ventas','ingresos','gastos','cortes','credito','compras','compra_inventario'];
+    foreach ($tablas as $value) {
+        DB::select('SET FOREIGN_KEY_CHECKS = 0');
         DB::select('TRUNCATE '.$value);
+        DB::select('SET FOREIGN_KEY_CHECKS = 1');
     }
+    $empresa = \App\Empresa::find(1);
+        $empresa->ingresos = 0.00; $empresa->egresos = 0.00; $empresa->caja_extra = 0.00;
+    $empresa->update();
     return 'listo';
 });
 
@@ -30,6 +35,10 @@ Route::get('home', 'HomeController@index')->name('home');
 
 Route::middleware(['auth'])->group(function(){
     //RUTAS METODO GET
+
+    //EXCEL
+    Route::get('excel','ExcelController@index');
+    Route::get('excel/clientes','ExcelController@exportClientes')->name('export.clientes');
 
     //MESAS
     Route::get('mesas/gestionar','MesasController@indexMesas');

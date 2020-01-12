@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div>
-            <table class="table table-bordered table-responsive gastoTable">
+        <div class="table-responsive">
+            <table class="table table-bordered gastoTable">
                 <thead class="bg-dark">
                     <tr>
                         <th>Usuario</th>

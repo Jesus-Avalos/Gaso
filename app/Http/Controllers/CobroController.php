@@ -39,7 +39,7 @@ class CobroController extends Controller
 				$tipoPago = $request->tipoPago;
 				if ($request->tipo == 'Comanda') {
 					$mesa = Mesa::find($venta->mesa_id);
-					$mesa->status = 2;
+						$mesa->status = 2;
 					$mesa->update();
 				}
 				if ($tipoPago == 'Credito') {
@@ -47,14 +47,14 @@ class CobroController extends Controller
 					if($adelanto > 0){
 						$credito = Credito::create(['total_pago'=>$adelanto,'venta_id'=>$venta->id]);
 						$empresa = Empresa::find(1);
-						$empresa->ingresos += $credito->total_pago;
+							$empresa->ingresos += $credito->total_pago;
 						$empresa->update();
 					}
 					$venta->status = ($adelanto == $venta->total) ? 'Exitosa' : 'Credito';
 				}else{
 					$venta->status = 'Exitosa';
 					$empresa = Empresa::find(1);
-					$empresa->ingresos += $venta->total;
+						$empresa->ingresos += $venta->total;
 					$empresa->update();
 				}
 				$venta->tipoPago = $tipoPago;

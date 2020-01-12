@@ -32,12 +32,12 @@
 								<div class="box-body bg-{{ $color }}">
 									@if($mesa->status != 2)
 										<a href="{{ route('comandas.'.$f, $mesa->id) }}">
-											<img src="{{ asset('/storage/tenedor.png') }}" class="img-fluid" alt="Responsive image">
+											<img src="{{ asset('/storage/mesa.png') }}" class="img-fluid" alt="Responsive image">
 										</a>
 									@else
 										@include('mesas.forms.modal')
 										<a href="#" data-toggle="modal" data-target=".limpiarModal{{ $mesa->id }}">
-											<img src="{{ asset('/storage/tenedor.png') }}" class="img-fluid" alt="Responsive image">
+											<img src="{{ asset('/storage/mesa.png') }}" class="img-fluid" alt="Responsive image">
 										</a>
 									@endif
 								</div>

@@ -8,6 +8,7 @@ use DB;
 use App\Venta;
 use App\Cliente;
 use App\Credito;
+use App\Empresa;
 
 class CreditoController extends Controller
 {
@@ -20,8 +21,23 @@ class CreditoController extends Controller
 			WHERE v.status = 'Credito'
 			GROUP BY cl.id
 		");
+
+		if(count($ventas) > 0){
+			$creditos = DB::select("
+				SELECT v.id, v.tipo, v.status, (v.total - SUM(c.total_pago)) AS deuda, v.total, SUM(c.total_pago) AS pagado, cl.nombre,v.cliente_id
+				FROM ventas AS v
+				LEFT OUTER JOIN credito AS c ON c.venta_id = v.id
+				INNER JOIN clientes AS cl ON cl.id = v.cliente_id
+				WHERE v.status = 'Credito'
+				AND cl.id = ".$ventas[0]->cliente_id."
+				GROUP BY v.id
+			");
+		}else{
+			$creditos = 0;
+		}
+			
 		$title = "Ventas pendientes de pago";
-		return view('creditos.index', compact('ventas','title'));
+		return view('creditos.index', compact('ventas','title','creditos'));
 		// return $ventas;
 	}
 
@@ -56,9 +72,9 @@ class CreditoController extends Controller
 	}
 
 	public function store(Request $request){
-		$credito = Credito::create($request->all())->save();
+		$credito = Credito::create(['total_pago'=>$request->total_pago,'venta_id'=>$request->venta_id]);
 		$empresa = Empresa::find(1);
-		$empresa->ingresos += $credito->total_pago;
+			$empresa->ingresos += $credito->total_pago;
 		$empresa->update();
 		$datos = DB::select("
 			SELECT (v.total - SUM(c.total_pago)) AS deuda, SUM(c.total_pago) AS pagado, v.total
@@ -71,12 +87,11 @@ class CreditoController extends Controller
 
 		if($datos[0]->pagado == $datos[0]->total){
 			$venta = Venta::find($request->venta_id);
-			$venta->status = 'Exitosa';
+				$venta->status = 'Exitosa';
 			$venta->update();
-			return redirect('ventas');
+			return redirect('venta');
 		}else{
 			return back()->with('status','Registrado correctamente');
 		}
-
 	}
 }

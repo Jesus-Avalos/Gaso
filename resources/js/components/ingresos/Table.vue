@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div>
-            <table class="table table-bordered ingresoTable table-responsive">
+        <div class="table-responsive">
+            <table class="table table-bordered ingresoTable">
                 <thead class="bg-dark">
                     <tr>
                         <th>Usuario</th>

@@ -181,11 +181,12 @@ function faddArrayCant(id, item, cant){
 function chgCantidad(item,precio,id,stock,tipo){
 	var cant = parseInt($('#cantidad'+item).val());
 	if(cant == ''){cant = 1;}
-	if(cant < stock){
+	if(cant <= stock){
 		if(tipo == 'plus'){
-			cant++;
+			if(cant < stock){ cant++; };
 			$('#cantidad'+item).val(cant);
-		}else if(tipo == 'less'){
+		}
+		if(tipo == 'less'){
 			if(cant > 1){
 				cant--;
 				$('#cantidad'+item).val(cant);

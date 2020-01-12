@@ -7,8 +7,7 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-12 col-md-6 ">
-                <FormIngresos @addNew="addNew" v-if="datos.caja_extra > 0"></FormIngresos>
-                <div class="alert alert-warning text-center" v-else><h3>Caja extra en 0</h3></div>
+                <FormIngresos @addNew="addNew"></FormIngresos>
             </div>
             <div class="col-12 col-md-6">
                 <TableIngresos :lista="lista" @updateItem="updateItem" @deleteItem="deleteItem"></TableIngresos>

@@ -358,6 +358,12 @@
           </ul>
         </li>
         @endcan
+        <li class="nav-item">
+          <a href="/excel" class="nav-link">
+            <i class="fas fa-cog nav-icon"></i>
+            <p>Reportes Excel</p>
+          </a>
+        </li>
       </ul>
     </nav>
     <!-- /.sidebar-menu -->
