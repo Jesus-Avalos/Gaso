@@ -40,9 +40,10 @@ class CompraController extends Controller
     public function create()
     {
         $proovedores = Proovedor::select('nombre','id')->get();
-        $inventario = Inventario::select('nombre','id')->get();
+        $inventario = Inventario::where('status','=','Activo')->select('nombre','id')->get();
         
         return view('compras.create',compact('proovedores','inventario'));
+        // return $inventario;
     }
     public function getIng($id)
     {

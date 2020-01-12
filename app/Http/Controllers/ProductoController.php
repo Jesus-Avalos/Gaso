@@ -54,7 +54,7 @@ class ProductoController extends Controller
 	 */
 	public function create()
 	{
-		$ingredientes = DB::select('SELECT * FROM inventario WHERE tipo != "Material"');
+		$ingredientes = DB::select('SELECT * FROM inventario WHERE tipo != "Material" AND status = "Activo"');
 		$subcategorias = [];
 		$categorias = Categoria::pluck('name', 'id');
 		return view('producto.create', compact('ingredientes', 'categorias', 'subcategorias'));
@@ -146,11 +146,11 @@ class ProductoController extends Controller
 
 		$ingredientesSelected = DB::table('detalle_productos')
 			->join('inventario', 'inventario.id', '=', 'detalle_productos.ingrediente_id')
-			->where('detalle_productos.producto_id', '=', $id)
+			->where([['detalle_productos.producto_id', '=', $id],['inventario.status','=','Activo']])
 			->select('detalle_productos.porciones', 'detalle_productos.precio', 'inventario.id', 'inventario.nombre', 'inventario.precio_porcion')
 			->get();
 
-		$ingredientes = DB::select('SELECT * FROM inventario WHERE tipo != "Material"');
+		$ingredientes = DB::select('SELECT * FROM inventario WHERE tipo != "Material" AND status = "Activo"');
 		$producto = $producto[0];
 
 		return view('producto.edit', compact('producto', 'categoria', 'subcategorias', 'ingredientes', 'ingredientesSelected', 'categorias'));

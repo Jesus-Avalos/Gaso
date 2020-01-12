@@ -103,7 +103,7 @@ class UtilidadesController extends Controller
 
 		$datos[1] = DB::table('inventario as i')
 			->join('detalle_productos as dp', 'i.id', '=', 'dp.ingrediente_id')
-			->where('dp.producto_id', '=', $id)
+			->where([['dp.producto_id', '=', $id],['i.status','=','Activo']])
 			->select('i.*')
 			->groupBy('i.id')
 			->get()->toArray();
@@ -129,7 +129,7 @@ class UtilidadesController extends Controller
 			$temp = [];
 			$ingredientes = DB::table('inventario as i')
 				->join('detalle_productos as dp', 'i.id', '=', 'dp.ingrediente_id')
-				->where('dp.producto_id', '=', $producto->id)
+				->where([['dp.producto_id', '=', $producto->id],['i.status','=','Activo']])
 				->select('i.porciones', 'i.id', 'dp.porciones AS por')
 				->get();
 			foreach ($ingredientes as $ing) {
@@ -148,7 +148,7 @@ class UtilidadesController extends Controller
 		$temp = [];
 		$ings = DB::table('inventario as i')
 			->join('detalle_productos as dp', 'i.id', '=', 'dp.ingrediente_id')
-			->where('dp.producto_id', '=', $id)
+			->where([['dp.producto_id', '=', $id],['i.status','=','Activo']])
 			->select('i.*', 'dp.porciones AS por')
 			->get()->toArray();
 
@@ -193,7 +193,7 @@ class UtilidadesController extends Controller
 
 	public function ingSelect($id)
 	{
-		$precio = DB::select('SELECT * FROM inventario WHERE id=' . $id);
+		$precio = DB::select('SELECT * FROM inventario WHERE status = "Activo" AND id=' . $id);
 		return $precio[0]->precio_porcion;
 	}
 

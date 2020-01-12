@@ -38,7 +38,7 @@
 							<td>$ {{$venta->total}}</td>
 							<td><small class="label label-{{$tipo}}">{{$venta->status}}</small></td>
 							<td>
-								{{ link_to_route('venta.show', $title = "", $parameters = [$venta->id], $attributes = ["class"=>"btn fa fa-bars btn-primary btn-sm","title"=>"Subcategorias"]) }}
+								{{ link_to_route('venta.show', $title = "", $parameters = [$venta->id], $attributes = ["class"=>"btn fa fa-bars btn-primary btn-sm","title"=>"Detalle"]) }}
 								@can('ventas.edit')
 									<button class="btn btn-sm btn-warning" title="Ticket Cocina"><i class="fa fa-coffee"></i></button>
 									<button class="btn btn-sm btn-secondary" title="Ticket Cliente" onclick="ticketCompra({{ $venta->id }})"><i class="fa fa-user"></i></button>

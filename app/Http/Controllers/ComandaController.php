@@ -101,7 +101,7 @@ class ComandaController extends Controller
                 foreach ($prodIng as $key) {
                     $porciones = DB::table('detalle_productos as dp')
                                         ->join('inventario as i','i.id','=','dp.ingrediente_id')
-                                        ->where([['i.id', '=', $key],['dp.producto_id', '=', $producto_id[$value]],])
+                                        ->where([['i.id', '=', $key],['dp.producto_id', '=', $producto_id[$value]],['i.status','=','Activo']])
                                         ->select('dp.porciones','i.id')
                                         ->get();
 
@@ -176,14 +176,14 @@ class ComandaController extends Controller
         $categorias = Categoria::all();
 
         foreach ($detalleVenta as $value) {
-            $arrayProd[] = DB::table('inventario AS i')->leftJoin('detalle_productos AS dp','dp.ingrediente_id','=','i.id')->where('dp.producto_id','=',$value->producto_id)->pluck('nombre','i.id');
+            $arrayProd[] = DB::table('inventario AS i')->leftJoin('detalle_productos AS dp','dp.ingrediente_id','=','i.id')->where([['dp.producto_id','=',$value->producto_id],['i.status','=','Activo']])->pluck('nombre','i.id');
             $arrayTemp[] = DB::table('detalle_ventas AS dv')->where('dv.id','=',$value->id)->pluck('dv.ingredientes');
         }
 
         foreach ($arrayTemp as $value) {
             $arrayGroup[] = json_decode($value[0]);
             foreach ($arrayGroup as $value2) {
-                $arraySelected[] = Inventario::where('id','=','$value2')->pluck('nombre','id');
+                $arraySelected[] = Inventario::where([['id','=','$value2'],['status','=','Activo']])->pluck('nombre','id');
             }
         }
 
@@ -234,7 +234,7 @@ class ComandaController extends Controller
                 foreach (json_decode($value->ingredientes) as $key) {
                     $porciones = DB::table('detalle_productos as dp')
                                         ->join('inventario as i','i.id','=','dp.ingrediente_id')
-                                        ->where([['i.id', '=', $key],['dp.producto_id', '=', $value->producto_id],])
+                                        ->where([['i.id', '=', $key],['dp.producto_id', '=', $value->producto_id],['i.status','=','Activo']])
                                         ->select('dp.porciones','i.id')
                                         ->get();
                     $inventario = Inventario::find($porciones[0]->id);
@@ -272,7 +272,7 @@ class ComandaController extends Controller
                 foreach ($prodIng as $key) {
                     $porciones = DB::table('detalle_productos as dp')
                                         ->join('inventario as i','i.id','=','dp.ingrediente_id')
-                                        ->where([['i.id', '=', $key],['dp.producto_id', '=', $producto_id[$value]],])
+                                        ->where([['i.id', '=', $key],['dp.producto_id', '=', $producto_id[$value]],['i.status','=','Activo']])
                                         ->select('dp.porciones','i.id')
                                         ->get();
 

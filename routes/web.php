@@ -113,7 +113,7 @@ Route::middleware(['auth'])->group(function(){
     //INVENTARIO
     Route::get('inventario/reabastecer', 'InventarioController@reabastecer');
     Route::post('inventario/reabastecer', 'InventarioController@reabastecerStore');
-    Route::get('inventario/getIngs', function(){ return \App\Inventario::all(); });
+    Route::get('inventario/getIngs', function(){ return \App\Inventario::where('status','=','Activo')->get(); });
     Route::get('inventario/existencia','UtilidadesController@existencia');
 
     //RUTAS METODO RESOURCE
@@ -150,7 +150,7 @@ Route::middleware(['auth'])->group(function(){
     Route::post('descuento', 'PedidoController@descuento');
     Route::get('unique/{nombre}', function($nombre){ return \App\Producto::where('name','=',$nombre)->get(); });
     Route::get('getUnidades', function(){ return \App\Unidad::all(); });
-    Route::get('getArticulos', function(){ return \App\Inventario::orderBy('created_at','desc')->get(); });
+    Route::get('getArticulos', function(){ return \App\Inventario::where('status','=','Activo')->orderBy('created_at','desc')->get(); });
     Route::get('getProovedores', function(){ return \App\Proovedor::orderBy('created_at','desc')->get(); });
 
     //Roles

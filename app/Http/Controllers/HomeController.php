@@ -41,7 +41,7 @@ class HomeController extends Controller
                             ->where('status','=','Pendiente')->count();
 
         $ventasTurno = Venta::whereNull('corte_id')->count();
-        $stockMinimo = Inventario::whereRaw('porciones <= stock_min')->get();
+        $stockMinimo = Inventario::whereRaw('porciones <= stock_min')->where('status','=','Activo')->get();
         $stocks = existencia();
         // return $stocks;
         return view('home', compact('stocks','exitosas','canceladas','pendientes','ventasTurno','stockMinimo'));
@@ -59,7 +59,7 @@ function existencia()
     $temp = [];
     $ingredientes = DB::table('inventario as i')
                         ->join('detalle_productos as dp','i.id','=','dp.ingrediente_id')
-                        ->where('dp.producto_id','=',$producto->id)
+                        ->where([['dp.producto_id','=',$producto->id],['i.status','=','Activo']])
                         ->select('i.porciones','i.id','dp.porciones AS por')
                         ->get(); 
     foreach($ingredientes as $ing)
