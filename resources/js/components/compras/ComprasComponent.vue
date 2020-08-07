@@ -3,9 +3,9 @@
         <div class="alert alert-success" style="display:none">
             Registrado correctamente
         </div>
-        <header-compras :proovs="proovs" :ings="ings" @new="agregaNew"></header-compras>
+        <header-compras :proovs="proovs" :ings="ings" @addNew="agregaNew"></header-compras>
         <body-compras :lista="lista" @delete="deleteRow"></body-compras>
-        <footer-compras :total="total"></footer-compras>
+        <footer-compras :total="subtotal"></footer-compras>
     </div>
 </template>
 
@@ -18,19 +18,29 @@ export default {
         return {
             proovs : JSON.parse(this.proovedores),
             ings : JSON.parse(this.inventario),
-            lista : []
+            lista : [],
+            existentes : []
         }
     },
     methods : {
-        agregaNew(datos){
-            this.lista.push(datos);
+        agregaNew(id){
+            if(this.existentes.indexOf(id) == -1){
+                this.existentes.push(id);
+                axios.get('/compra/getIng/'+id).then(response => {
+                    const datos = response.data;
+                    this.lista.push(datos[0]);
+                });
+            }else{
+                alert('El ingrediente ya fue añadido');
+            }
         },
         deleteRow(ind){
-            this.lista.splice(this.lista.indexOf(ind),1);
+            this.lista.splice(ind,1);
+            this.existentes.splice(ind,1);
         }
     },
     computed: {
-        ...Vuex.mapState(['total'])
+        ...Vuex.mapState(['subtotal'])
     }
 }
 </script>

@@ -13,85 +13,60 @@ use App\Empresa;
 class CreditoController extends Controller
 {
     public function index(){
-		$ventas = DB::select("
-			SELECT count(v.id) AS numVentas, v.id, v.tipo, v.status, (SUM(v.total) - SUM(c.total_pago)) AS deuda, SUM(v.total) AS total, SUM(c.total_pago) AS pagado, cl.nombre,v.cliente_id
-			FROM ventas AS v
-			LEFT OUTER JOIN credito AS c ON c.venta_id = v.id
-			INNER JOIN clientes AS cl ON cl.id = v.cliente_id
-			WHERE v.status = 'Credito'
+		$cargos = DB::select("
+			SELECT CASE WHEN SUM(v.total) IS NULL THEN 0 ELSE SUM(v.total) END AS totalCargo, 
+			cl.nombre, cl.id
+			FROM clientes AS cl
+			INNER JOIN ventas AS v ON v.cliente_id = cl.id AND v.tipoPago = 'Credito'
 			GROUP BY cl.id
 		");
 
-		if(count($ventas) > 0){
-			$creditos = DB::select("
-				SELECT v.id, v.tipo, v.status, (v.total - SUM(c.total_pago)) AS deuda, v.total, SUM(c.total_pago) AS pagado, cl.nombre,v.cliente_id
-				FROM ventas AS v
-				LEFT OUTER JOIN credito AS c ON c.venta_id = v.id
-				INNER JOIN clientes AS cl ON cl.id = v.cliente_id
-				WHERE v.status = 'Credito'
-				AND cl.id = ".$ventas[0]->cliente_id."
-				GROUP BY v.id
-			");
-		}else{
-			$creditos = 0;
-		}
-			
-		$title = "Ventas pendientes de pago";
-		return view('creditos.index', compact('ventas','title','creditos'));
-		// return $ventas;
+		$abonos = DB::select("
+			SELECT CASE WHEN SUM(c.total_pago) IS NULL THEN 0 ELSE SUM(c.total_pago) END AS totalAbono, 
+			cl.nombre, cl.id
+			FROM clientes AS cl
+			INNER JOIN credito AS c ON c.cliente_id = cl.id
+			GROUP BY cl.id
+		");
+		
+							
+		return view('creditos.index',compact('cargos','abonos'));
+		// return $abonos;
+		// return $cargos;
 	}
 
 	public function show($id){
-		$venta = Venta::find($id);
-		$cliente = Cliente::find($venta->cliente_id);
-		$abonos = Credito::where('venta_id','=',$venta->id)->orderBy('id','DESC')->get();
-		$datos = DB::select("
-			SELECT (v.total - SUM(c.total_pago)) AS deuda, SUM(c.total_pago) AS pagado, v.total
-			FROM ventas AS v
-			LEFT OUTER JOIN credito AS c ON c.venta_id = v.id
-			WHERE v.status = 'Credito'
-			AND v.id = ". $id ."
-			GROUP BY v.id
-		");
 
-		return view('creditos.create',compact('venta','cliente','abonos','datos'));
+		return view('creditos.create');
 	}
 
 	public function ventasCredito($id){
-		$ventas = DB::select("
-			SELECT v.id, v.tipo, v.status, (v.total - SUM(c.total_pago)) AS deuda, v.total, SUM(c.total_pago) AS pagado, cl.nombre,v.cliente_id
-			FROM ventas AS v
-			LEFT OUTER JOIN credito AS c ON c.venta_id = v.id
-			INNER JOIN clientes AS cl ON cl.id = v.cliente_id
-			WHERE v.status = 'Credito'
-			AND cl.id = ".$id."
- 			GROUP BY v.id
+		$ventas = Venta::where([['tipoPago','=','Credito'],['cliente_id','=',$id]])->get();
+		$abonos = Credito::where('cliente_id','=',$id)->get();
+		$cliente = Cliente::find($id);
+
+		$totalCargos = DB::select("
+			SELECT CASE WHEN SUM(v.total) IS NULL THEN 0 ELSE SUM(v.total) END AS totalCargos
+			FROM clientes AS cl
+			INNER JOIN ventas AS v ON v.cliente_id = cl.id AND v.tipoPago = 'Credito'
+			WHERE cl.id = ".$id."
 		");
-		$title = "Cliente " . $ventas[0]->nombre;
-		return view('creditos.show', compact('ventas','title'));
+
+		$totalAbonos = DB::select("
+			SELECT CASE WHEN SUM(c.total_pago) IS NULL THEN 0 ELSE SUM(c.total_pago) END AS totalAbonos
+			FROM clientes AS cl
+			LEFT OUTER JOIN credito AS c ON c.cliente_id = cl.id
+			WHERE cl.id = ".$id."
+		");
+		return view('creditos.show',compact('ventas','abonos','cliente','totalAbonos','totalCargos'));
+		// return $totales;
 	}
 
 	public function store(Request $request){
-		$credito = Credito::create(['total_pago'=>$request->total_pago,'venta_id'=>$request->venta_id]);
+		$credito = Credito::create(['total_pago'=>$request->total_pago,'cliente_id'=>$request->cliente_id]);
 		$empresa = Empresa::find(1);
 			$empresa->ingresos += $credito->total_pago;
 		$empresa->update();
-		$datos = DB::select("
-			SELECT (v.total - SUM(c.total_pago)) AS deuda, SUM(c.total_pago) AS pagado, v.total
-			FROM ventas AS v
-			RIGHT JOIN credito AS c ON c.venta_id = v.id
-			WHERE v.status = 'Credito'
-			AND v.id = ". $request->venta_id ."
-			GROUP BY v.id
-		");
-
-		if($datos[0]->pagado == $datos[0]->total){
-			$venta = Venta::find($request->venta_id);
-				$venta->status = 'Exitosa';
-			$venta->update();
-			return redirect('venta');
-		}else{
-			return back()->with('status','Registrado correctamente');
-		}
+		return back()->with('status','Registrado correctamente');
 	}
 }

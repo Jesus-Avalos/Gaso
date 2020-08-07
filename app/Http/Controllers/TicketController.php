@@ -14,6 +14,21 @@ use App\Mesa;
 
 class TicketController extends Controller
 {
+    public function test(){
+        $string = '';
+        $detail = DB::table('detalle_ventas AS dv')
+                    ->join('productos AS p','p.id','=','dv.producto_id')
+                    ->where('dv.venta_id','=',6)
+                    ->select('dv.*','p.name','p.precio_venta')
+                    ->get();
+
+        foreach ($detail as $value) {
+            $string .= new item($value->cantidad, $value->name, number_format($value->precio_venta, 2, '.', ','), number_format($value->precio_total, 2, '.', ','));
+        }
+
+        return view('ticket.index',compact('string'));
+    }
+
     public function ticketCocina($id)
     {
         //DATOS DE LA BASE DE DATOS

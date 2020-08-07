@@ -28,6 +28,5 @@
 <script>
     export default {
         props: ['cobro']
-
     }
 </script>

@@ -46,8 +46,8 @@ export default {
 
             axios.post('/inventario/reabastecer',params).then((response)=>{
                 $('#alertSuccess').html(`Se reabastecieron <strong>${this.cantidad}</strong> unidades al producto <strong>${response.data.nombre}</strong>`);
-                $('#alertSuccess').fadeToggle(4000);
-                $('#alertSuccess').fadeToggle(4000);
+                $('#alertSuccess').fadeToggle(2000);
+                $('#alertSuccess').fadeToggle(2000);
                 this.cantidad = 1;
             })
         }

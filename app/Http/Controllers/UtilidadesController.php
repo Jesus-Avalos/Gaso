@@ -143,6 +143,90 @@ class UtilidadesController extends Controller
 		return $datos;
 	}
 
+	public function clienteNew(Request $request){
+		$cliente = Cliente::create($request->all());
+		$cliente->save();
+		$venta = Venta::find($request->venta);
+			$venta->cliente_id = $cliente->id;
+		$venta->update();
+		return $cliente->id;
+	}
+
+	public function getDetails($id){
+		$venta = Venta::find($id);
+		$detalle = DB::table('detalle_ventas AS dv')->join('productos AS p','p.id','=','dv.producto_id')->where('dv.venta_id','=',$id)
+						->select('dv.*','p.name', 'p.subcategoria_id', 'p.precio_venta')->get();
+		
+		$arrayTemp = [];
+		$arrayProd = [];
+		foreach ($detalle as $value) {
+			array_push($arrayProd,DB::table('inventario AS i')->leftJoin('detalle_productos AS dp','dp.ingrediente_id','=','i.id')->where([['dp.producto_id','=',$value->producto_id],['i.status','=','Activo']])->pluck('nombre','i.id'));
+		}
+		$arrayGroup = [];
+		$options = [];
+		for ($i=0; $i < count($detalle); $i++) { 
+			$string = '';
+			array_push($arrayGroup,json_decode($detalle[$i]->ingredientes));
+			foreach ($arrayProd[$i] as $key => $value) {
+				$string .= '<option value="'.$key.'">'.$value.'</option>';
+			}
+			array_push($options,$string);
+		}
+		$datos[0] = $venta;
+		$datos[1] = $detalle;
+		$datos[2] = $options;
+		$datos[3] = $arrayGroup;
+
+		return $datos;
+	}
+
+	public function getStockByIngs(Request $request){
+		$porcionesI = Inventario::select('porciones','id')->get();
+		foreach ($arrayStock as $key => $value) {
+			$porcionesP = DB::table('inventario as i')
+							->join('detalle_productos as dp','dp.ingrediente_id','=','i.id')
+							->where([['dp.producto_id','=',$value->key],['i.status','=','Activo']])
+							->select('dp.porciones','i.id')->get();
+			foreach ($array as $value2) {
+				if ($value->id == $value2->id) {
+					$value->porciones -= $value2->porciones * $cant;
+				break;
+				}
+			}
+		}
+		$porcionesP = DB::table('inventario as i')
+					->join('detalle_productos as dp','dp.ingrediente_id','=','i.id')
+					->where([['dp.producto_id','=',$id],['i.status','=','Activo']])
+					->select('dp.porciones','i.id')->get();
+		$temp = [];
+		foreach ($porciones as $value) {
+			foreach ($porcionesP as $value2) {
+				if ($value->id == $value2->id) {
+					array_push($temp,intdiv($value->porciones,$value2->porciones));
+				}
+			}
+		}
+		$stock = min($temp);
+		return $stock;
+	}
+
+	public function getCantIngs($id,$cant){
+		$porcionesP = DB::table('inventario as i')
+					->join('detalle_productos as dp','dp.ingrediente_id','=','i.id')
+					->where([['dp.producto_id','=',$id],['i.status','=','Activo']])
+					->select('dp.porciones','i.id')->get();
+		$porcionesI = Inventario::select('porciones','id')->get();
+		foreach ($porcionesI as $value) {
+			foreach ($porcionesP as $value2) {
+				if ($value->id == $value2->id) {
+					$value->porciones -= $value2->porciones * $cant;
+				break;
+				}
+			}
+		}
+		return $porcionesI;
+	}
+
 	public function getStock($id)
 	{
 		$temp = [];
@@ -162,9 +246,11 @@ class UtilidadesController extends Controller
 
 	public function selectSub($id)
 	{
-		$datos[0] = DB::select("SELECT * FROM productos AS p WHERE p.subcategoria_id =" . $id . " AND p.status = 'Activo'");
-		$dato = Subcategoria::find($id);
-		$datos[1] = $dato->categoria_id;
+		$datos = DB::select("
+			SELECT p.*, s.categoria_id FROM productos AS p
+			INNER JOIN subcategorias AS s ON s.id = p.subcategoria_id
+			WHERE p.subcategoria_id =" . $id . " AND p.status = 'Activo'
+		");
 
 		return $datos;
 	}

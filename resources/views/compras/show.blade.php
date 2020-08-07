@@ -18,6 +18,10 @@
                             <td>{{ $compra->id }}</td>
                         </tr>
                         <tr>
+                            <td><b>Fecha: </b></td>
+                            <td>{{ $compra->created_at }}</td>
+                        </tr>
+                        <tr>
                             <?php $tipo = ($compra->status == 'Exitosa') ? 'success' : 'danger' ?>
                             <td><b>Status: </b></td>
                             <td><small class="label label-{{$tipo}}">{{ $compra->status }}</small></td>

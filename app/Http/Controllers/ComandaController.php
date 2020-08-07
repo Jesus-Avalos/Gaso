@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Mesa;
 use App\CLiente;
 use App\Categoria;
+use App\Producto;
 use App\Venta;
 use App\Inventario;
 use App\DetalleVenta;
@@ -24,282 +25,150 @@ class ComandaController extends Controller
     {
         $this->middleware('permission:comandas.edit')->only(['edit','update','getVenta','getDVenta','store','show']);
     }
-
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-
-    public function store(Request $request)
-    {
-        try {
-            DB::beginTransaction();
-
+    public function show($id){
+        $mesa = Mesa::find($id);
+        if ($mesa->status == 0) {
+            $venta = Venta::where([['mesa_id','=',$id],['status','=','Pendiente']])->get();
+            $venta = $venta[0];
+        }else{
             $venta = new Venta;
-            $venta->subtotal = $request->get('subtotal');
-            $venta->descuento = $request->get('descuento');
-            $venta->total = $request->get('total');
-            $venta->tipo = $request->get('tipo');
-            $venta->status = 'Pendiente';
-            $venta->user_id = auth()->user()->id;
-            $venta->mesa_id = $request->get('mesa');
-            $opcion = $request->get('opcionCliente');
-            $desechable = $request->get('desechable');
-
-            if(isset($desechable)){
-                $des = Inventario::find($desechable);
-                $des->porciones--;
-                $des->update();
-            }
-
-            if (isset($opcion)) {
-                if ($opcion == 'si') {
-                    $venta->cliente_id = $request->get('cliente_id');
-                }else{
-                    $cliente = Cliente::create($request->all());
-                    $cliente->save();
-                    $venta->cliente_id = $cliente->id;
-                }
-            }else{
+                $venta->subtotal = 0;
+                $venta->descuento = 0;
+                $venta->total = 0;
+                $venta->tipo = 'Comanda';
+                $venta->status = 'Pendiente';
+                $venta->user_id = auth()->user()->id;
+                $venta->mesa_id = $id;
                 $venta->cliente_id = 1;
-            }
-
             $venta->save();
+        }
 
-            $item = $request->get('item');
-            $producto_id = $request->get('producto_id');
-            $cantidad = $request->get('cantidad');
-            $ingredientes = $request->get('ingSelected');
-            $precio = $request->get('precio_total');
-            $mesa_id = $request->get('mesa');
+        $clientes = Cliente::all();
 
-            foreach ($item as $value) {
-                $detalleV = new DetalleVenta;
-                $detalleV->venta_id = $venta->id;
-                $detalleV->producto_id = $producto_id[$value];
-                $detalleV->cantidad = $cantidad[$value];
-                $detalleV->precio_total = $precio[$value];
-                $prodIng = $ingredientes[$value];
-
-                foreach ($prodIng as $key) {
-                    $porciones = DB::table('detalle_productos as dp')
-                                        ->join('inventario as i','i.id','=','dp.ingrediente_id')
-                                        ->where([['i.id', '=', $key],['dp.producto_id', '=', $producto_id[$value]],['i.status','=','Activo']])
-                                        ->select('dp.porciones','i.id')
-                                        ->get();
-
-                    $inventario = Inventario::find($porciones[0]->id);
-
-                    $inventario->porciones -= ($porciones[0]->porciones * $cantidad[$value]);
-                    $inventario->cantidad = intval($inventario->porciones / $inventario->por_unidad);
-                    $inventario->update();
-
-                }
-
-                $detalleV->ingredientes = json_encode($prodIng);
-                $detalleV->save();
-            }
-
-            $mesa = Mesa::find($mesa_id);
+        if ($mesa->status == 1) {
             $mesa->status = 0;
             $mesa->update();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollback();
         }
 
-        return redirect('mesas');
+        return view('comandas.create',compact('mesa','venta','clientes'));
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $mesa = Mesa::find($id);
-        $desechables = Inventario::where('tipo','=','Desechable')->pluck('nombre','id');
-
-        return view('comandas.create',compact('mesa','desechables'));
+    public function saveData(Request $request, $id){
+        $venta = Venta::find($id);
+            $venta->subtotal = $request->subtotal;
+            $venta->descuento = $request->descuento;
+            $venta->total = $request->total;
+        $venta->update();
+        return 'Exito';
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $venta = $this->getVenta($id);
-
-        $detalleVenta = $this->getDVenta($venta[0]->id);
-
-        $mesa = Mesa::find($id);
-        $cliente = Cliente::find($venta[0]->cliente_id);
-        $desechables = Inventario::where('tipo','=','Desechable')->pluck('nombre','id');
-
-        return view('comandas.edit',compact('venta','mesa','detalleVenta','cliente','desechables'));
+    public function updateCliente(Request $request, $id){
+        $venta = Venta::find($id);
+            $venta->cliente_id = $request->cliente_id;
+        $venta->update();
     }
 
-    public function getComanda($id){
-        $venta = $this->getVenta($id);
+    public function cancelarVenta($id){
+        $venta = Venta::find($id);
+        $url = 'pedido';
+        if ($venta->tipo == 'Comanda') {
+            $url = 'mesas';
+            $mesa = Mesa::find($venta->mesa_id);
+                $mesa->status = 1;
+            $mesa->update();
+        }
+        $venta->delete();
+        return redirect($url);
+    }
 
-        $datos[0] = $venta;
+    public function storeDetail(Request $request){
+        $venta = Venta::find($request->venta_id);
+        $producto = Producto::find($request->producto_id);
+        $productoDetail = DB::table('inventario as i')
+                            ->join('detalle_productos as dp','dp.ingrediente_id','=','i.id')
+                            ->where([['dp.producto_id','=',$request->producto_id],['i.status','=','Activo']])
+                            ->select('i.id','dp.porciones')->get();
 
+        $ings = [];
 
-        $detalleVenta = $this->getDVenta($venta[0]->id);
+        foreach ($productoDetail as $value) {
+            array_push($ings,intval($value->id));
+        }
+        
+        $dv = new DetalleVenta;
+            $dv->venta_id = $venta->id;
+            $dv->producto_id = $producto->id;
+            $dv->cantidad = 1;
+            $dv->precio_total = $producto->precio_venta;
+            $dv->ingredientes = json_encode($ings);
+        $dv->save();
 
-        $datos[1] = $detalleVenta;
+        $this->mutarInventario($dv->id,'disminuir');
+        $newobj = array(
+            "id" => $dv->id,
+            "producto_id" => $dv->producto_id,
+            "name" => $producto->name,
+            "cantidad" => $dv->cantidad,
+            "precio_venta" => $dv->precio_total,
+            "options" => $this->optionsSelected($dv->id),
+            "opSelected" => $ings
+        );            
+        
+        return $newobj;
+    }
 
-        $mesa = Mesa::find($id);
-        $categorias = Categoria::all();
+    public function updateCantidad(Request $request, $id){
+        $this->mutarInventario($id,'aumentar');
+        $detail = DetalleVenta::find($id);
+            $detail->cantidad = $request->cantidad;
+            $detail->precio_total = $request->precio_total;
+        $detail->update();
+        $this->mutarInventario($id,'disminuir');
+    }
 
-        foreach ($detalleVenta as $value) {
-            $arrayProd[] = DB::table('inventario AS i')->leftJoin('detalle_productos AS dp','dp.ingrediente_id','=','i.id')->where([['dp.producto_id','=',$value->producto_id],['i.status','=','Activo']])->pluck('nombre','i.id');
-            $arrayTemp[] = DB::table('detalle_ventas AS dv')->where('dv.id','=',$value->id)->pluck('dv.ingredientes');
+    public function updateIngs(Request $request, $id){
+        $this->mutarInventario($id,'aumentar');
+        $detail = DetalleVenta::find($id);
+            $detail->ingredientes = json_encode($request->ingSelected);
+        $detail->update();
+        $this->mutarInventario($id,'disminuir');
+        $array = array(
+            "options" => $this->optionsSelected($id),
+            "opSelected" => $request->ingSelected
+        );
+        return $array;
+    }
+
+    public function deleteDetail($id){
+        $this->mutarInventario($id,'aumentar');
+        DB::select('DELETE FROM detalle_ventas WHERE id = ' . $id);
+    }
+
+    public function mutarInventario($id,$tipo){
+        $detail = DetalleVenta::find($id);
+        $ings = json_decode($detail->ingredientes);
+
+        foreach ($ings as $value) {
+            $detailProd = DetalleProducto::where([['producto_id','=',$detail->producto_id],['ingrediente_id','=',$value]])->get();
+            $ing = Inventario::find($value);
+                if($tipo == 'aumentar'){$ing->porciones += $detailProd[0]->porciones * $detail->cantidad;}
+                else{$ing->porciones -= $detailProd[0]->porciones * $detail->cantidad;}
+                $ing->cantidad = $ing->porciones / $ing->por_unidad;
+            $ing->update();
+        }
+    }
+
+    public function optionsSelected($id){
+        $detail = DetalleVenta::find($id);
+        $arrayProd = DB::table('inventario AS i')
+                        ->leftJoin('detalle_productos AS dp','dp.ingrediente_id','=','i.id')
+                        ->where([['dp.producto_id','=',$detail->producto_id],['i.status','=','Activo']])
+                        ->pluck('nombre','i.id');
+        $string = '';
+        foreach ($arrayProd as $key => $value) {
+            $string .= '<option value="'.$key.'" selected>'.$value.'</option>';
         }
 
-        foreach ($arrayTemp as $value) {
-            $arrayGroup[] = json_decode($value[0]);
-            foreach ($arrayGroup as $value2) {
-                $arraySelected[] = Inventario::where([['id','=','$value2'],['status','=','Activo']])->pluck('nombre','id');
-            }
-        }
-
-        $datos[2] = $arrayProd;
-        $datos[3] = $arrayGroup;
-
-        return $datos;
-    }
-
-    function getVenta($id){
-        return Venta::where('status','=','Pendiente')
-                    ->where('mesa_id','=',$id)
-                    ->get();
-    }
-
-    function getDVenta($id){
-        return DB::table('detalle_ventas AS dv')->join('productos AS p','p.id','=','dv.producto_id')->where('dv.venta_id','=',$id)
-                ->select('dv.*','p.name', 'p.subcategoria_id', 'p.precio_venta')->get();
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        try {
-            DB::beginTransaction();
-            $venta = Venta::find($id);
-            $venta->subtotal = $request->get('subtotal');
-            $venta->descuento = $request->get('descuento');
-            $venta->total = $request->get('total');
-            $opcion = $request->get('opcionCliente');
-            $desechable = $request->get('desechable');
-            if(isset($desechable)){
-                $des = Inventario::find($desechable);
-                $des->porciones--;
-                $des->update();
-            }
-            $detsV = DB::table('detalle_ventas as dv')
-                            ->where('dv.venta_id','=',$venta->id)
-                            ->get();
-
-            foreach ($detsV as $value) {
-                foreach (json_decode($value->ingredientes) as $key) {
-                    $porciones = DB::table('detalle_productos as dp')
-                                        ->join('inventario as i','i.id','=','dp.ingrediente_id')
-                                        ->where([['i.id', '=', $key],['dp.producto_id', '=', $value->producto_id],['i.status','=','Activo']])
-                                        ->select('dp.porciones','i.id')
-                                        ->get();
-                    $inventario = Inventario::find($porciones[0]->id);
-                    $inventario->porciones += ($porciones[0]->porciones * $value->cantidad);
-                    $inventario->cantidad = intval($inventario->porciones / $inventario->por_unidad);
-                    $inventario->update();
-
-                }
-            }
-            DB::select('DELETE FROM detalle_ventas WHERE venta_id = ' . $id);
-            if (isset($opcion)) {
-                if ($opcion == 'si') {
-                    $venta->cliente_id = $request->get('cliente_id');
-                }else{
-                    $cliente = Cliente::create($request->all());
-                    $cliente->save();
-                    $venta->cliente_id = $cliente->id;
-                }
-            }
-            $venta->update();
-
-            $item = $request->get('item');
-            $producto_id = $request->get('producto_id');
-            $cantidad = $request->get('cantidad');
-            $ingredientes = $request->get('ingSelected');
-            $precio = $request->get('precio_total');
-            $mesa_id = $request->get('mesa');
-            foreach ($item as $value) {
-                $detalleV = new DetalleVenta;
-                $detalleV->venta_id = $id;
-                $detalleV->producto_id = $producto_id[$value];
-                $detalleV->cantidad = $cantidad[$value];
-                $detalleV->precio_total = $precio[$value];
-                $prodIng = $ingredientes[$value];
-                foreach ($prodIng as $key) {
-                    $porciones = DB::table('detalle_productos as dp')
-                                        ->join('inventario as i','i.id','=','dp.ingrediente_id')
-                                        ->where([['i.id', '=', $key],['dp.producto_id', '=', $producto_id[$value]],['i.status','=','Activo']])
-                                        ->select('dp.porciones','i.id')
-                                        ->get();
-
-                    $inventario = Inventario::find($porciones[0]->id);
-                    $inventario->porciones -= ($porciones[0]->porciones * $cantidad[$value]);
-                    $inventario->cantidad = intval($inventario->porciones / $inventario->por_unidad);
-                    $inventario->update();
-
-                }
-                $detalleV->ingredientes = json_encode($prodIng);
-                $detalleV->save();
-            }
-            DB::commit();
-        }catch(Exception $e){
-            DB::rollback();
-        }
-        return redirect('mesas');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return $string;
     }
 }

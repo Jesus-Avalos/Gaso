@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="col-12">
-            <table class="table table-bordered w-25 float-right">
+            <table class="table table-bordered w-50 float-right">
                 <tbody>
                     <tr>
                         <td><strong>Total</strong></td>

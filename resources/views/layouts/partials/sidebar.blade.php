@@ -342,6 +342,13 @@
               </a>
             </li>
             <li class="nav-item">
+              <a href="/reportes/productos" class="nav-link">
+                <i class="fas fa-chevron-circle-right nav-icon"></i>
+                <i class="fas fa-user nav-icon"></i>
+                <p>Consulta productos</p>
+              </a>
+            </li>
+            <li class="nav-item">
               <a href="/reportes/compras" class="nav-link">
                 <i class="fas fa-chevron-circle-right nav-icon"></i>
                 <i class="fas fa-user nav-icon"></i>

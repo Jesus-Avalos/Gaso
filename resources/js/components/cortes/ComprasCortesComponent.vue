@@ -7,24 +7,26 @@
             <thead class="bg-dark">
                 <tr>
                     <th>Folio</th>
+                    <th>Fecha</th>
                     <th>Proovedor</th>
                     <th>Status</th>
                     <th>Total</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="compra in compras" :key="compra.id">
-                    <td>{{ compra.id }}</td>
-                    <td>{{ compra.nombre }}</td>
-                    <td>{{ compra.status }}</td>
-                    <td>{{ compra.total }}</td>
-                </tr>
+                <Compra 
+                    v-for="(compra,index) in compras" 
+                    :key="compra.id" 
+                    :index="index" 
+                    :compra="compra"
+                    @updateDate="updateDate" />
             </tbody>
         </table>
     </div>
 </template>
 
 <script>
+import Compra from './Compra'
 export default {
     data () {
         return {
@@ -38,7 +40,7 @@ export default {
         initDT () {
             $(function(){
                 $('.comprasTable').DataTable({
-                    "order": [[ 0, "asc" ]],
+                    "order": [[ 0, "desc" ]],
                     "autoWidth" : false,
                     "info"      : false,
                     "searching" : false,
@@ -51,9 +53,14 @@ export default {
                 this.compras = response.data;
                 this.initDT();
             })
+        },
+        updateDate(params){
+            this.compras[params.index].created_at = params.date;
         }
+    },
+    components : {
+        Compra
     }
-
 }
 </script>
 

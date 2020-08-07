@@ -178,7 +178,7 @@
                 var ids = document.getElementsByClassName('idInput');
                 var precios = document.getElementsByClassName('precioInput');
                 var values = [].map.call(ids, function(item) {
-                    existentes.push(item.value);
+                    existentes.push(parseInt(item.value));
                 });
                 var values = [].map.call(precios, function(item) {
                     total += parseFloat(item.value);

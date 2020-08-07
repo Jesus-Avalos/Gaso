@@ -60,50 +60,6 @@
                         </tr>
                     </tbody>
                 </table>
-                @if ($venta->tipoPago == 'Credito')
-                    <h1 class="text-center">Abonos</h1>
-                    <table class="table table-bordered">
-                        <thead class="bg-black">
-                            <tr>
-                                <th>Crédito</th>
-                                <th>Fecha</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                                @foreach($abonos as $abono)
-                                    <tr>
-                                        <td>{{ $abono->id }}</td>
-                                        <td>{{ $abono->created_at }}</td>
-                                        <td>${{ $abono->total_pago }}</td>
-                                    </tr>
-                                @endforeach
-                                @if(count($abonos)<1)
-                                    <tr>
-                                        <td colspan="3"><h3>Sin registros</h3></td>
-                                    </tr>
-                                @endif
-                        </tbody>
-                    </table>
-                    <div class="col-12 col-md-5 offset-md-7">
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <td>Pagado: </td>
-                                    <td>$ {{ ($datos[0]->pagado == null) ? 0 : $datos[0]->pagado }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Deuda: </td>
-                                    <td>$ {{ ($datos[0]->pagado == null) ? $datos[0]->total : $datos[0]->deuda}}</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Total venta:</strong></td>
-                                    <td>$ {{ $datos[0]->total }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                @endif
             </div>
             <div class="col-12 col-md-6 table-responsive">
                 <h1 class="text-center">Productos</h1>

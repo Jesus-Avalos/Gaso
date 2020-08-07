@@ -42,14 +42,14 @@ import PieChart from './PieChart.js'
         axios.get(`/reportes/graphs/products/${opcion}`).then((response)=>{
             this.op = opcion;
             this.datacollection = {
-            labels: response.data.labels,
-            datasets: [
-                {
-                label: 'Ventas',
-                backgroundColor: response.data.colores,
-                data: response.data.ventas
-                }
-            ]
+              labels: response.data.labels,
+              datasets: [
+                  {
+                  label: 'Ventas',
+                  backgroundColor: response.data.colores,
+                  data: response.data.ventas
+                  }
+              ]
             }
         })
       }

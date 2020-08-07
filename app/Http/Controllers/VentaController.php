@@ -72,36 +72,4 @@ class VentaController extends Controller
 
     	return view('ventas.index', compact('ventas','title'));
 	}
-
-    public function show($id)
-    {
-		$venta = DB::table('ventas AS v')
-					->join('users AS u','u.id','=','v.user_id')
-					->where('v.id','=',$id)
-					->select('v.*','u.name')->get();
-		$venta = $venta[0];
-		$mesa = Mesa::find($venta->mesa_id);
-
-		$productos = DB::table('detalle_ventas as dv')
-							->join('productos as p','p.id','=','dv.producto_id')
-							->join('detalle_productos as dp','dp.producto_id','=','p.id')
-							->where('dv.venta_id','=',$id)
-							->groupBy('dv.id')
-							->select('dv.cantidad','dv.precio_total','p.name','dp.precio')->get();
-
-		$cliente = Cliente::where('id','=',$venta->cliente_id)->get();
-		
-		$abonos = Credito::where('venta_id','=',$venta->id)->orderBy('id','DESC')->get();
-
-		$datos = DB::select("
-			SELECT (v.total - SUM(c.total_pago)) AS deuda, SUM(c.total_pago) AS pagado, v.total
-			FROM ventas AS v
-			LEFT OUTER JOIN credito AS c ON c.venta_id = v.id
-			AND v.id = ". $id ."
-		");
-
-		return view('ventas.show', compact('venta','productos','cliente','mesa','abonos','datos'));
-		// return $datos; 
-
-    }
 }

@@ -15,6 +15,8 @@ Route::get('/', function () {
     return redirect('login');
 });
 
+Route::get('test','TicketController@test');
+
 Route::get('/temp',function (){
     $tablas = ['ventas','detalle_ventas','ingresos','gastos','cortes','credito','compras','compra_inventario'];
     foreach ($tablas as $value) {
@@ -25,6 +27,12 @@ Route::get('/temp',function (){
     $empresa = \App\Empresa::find(1);
         $empresa->ingresos = 0.00; $empresa->egresos = 0.00; $empresa->caja_extra = 0.00;
     $empresa->update();
+    $mesas = \App\Mesa::where('status','!=','3')->get();
+    foreach ($mesas as $value) {
+        $mesa = \App\Mesa::find($value->id);
+            $mesa->status = 1;
+        $mesa->update();
+    }
     return 'listo';
 });
 
@@ -69,6 +77,7 @@ Route::middleware(['auth'])->group(function(){
 
     //VENTA
     Route::get('venta','VentaController@index');
+    Route::get('venta/cancelar/{id}','ComandaController@cancelarVenta');
     Route::get('venta/exitosas','VentaController@exitosas');
     Route::get('venta/canceladas','VentaController@canceladas');
     Route::get('venta/pendientes','VentaController@pendientes');
@@ -86,7 +95,9 @@ Route::middleware(['auth'])->group(function(){
 
     //REPORTES
     Route::get('reportes/ventas','ReportesController@ventas');
+    Route::get('reportes/productos','ReportesController@productos');
     Route::get('reportes/compras','ReportesController@compras');
+    Route::post('reportes/getProductos','ReportesController@getProductosByDates');
     Route::post('reportes/getSales','ReportesController@getSalesByDates');
     Route::post('reportes/getShops','ReportesController@getShopsByDates');
     Route::post('reportes/dataPDF','ReportesController@dataPDF');
@@ -101,7 +112,9 @@ Route::middleware(['auth'])->group(function(){
     Route::get('cortes/ventas','CortesController@showVentas');
     Route::get('cortes/getVentasCortes','CortesController@getVentasCortes');
     Route::get('cortes/getComprasCortes','CortesController@getComprasCortes');
+    Route::get('cortes/getAbonosCortes','CortesController@getAbonosCortes');
     Route::get('cortes/getCortes','CortesController@getCortes');
+    Route::put('cortes/updateDate/{id}','CortesController@updateDate');
 
     //UNIDAD
     Route::get('unidad','UnidadesController@index');
@@ -119,7 +132,7 @@ Route::middleware(['auth'])->group(function(){
     //RUTAS METODO RESOURCE
     Route::resource('/checkbox','CheckController');
     Route::resource('user','UserController');
-    Route::resource('test','TestController');
+    // Route::resource('test','TestController');
     Route::resource('inventario','InventarioController');
     Route::resource('producto','ProductoController');
     Route::resource('categoria','CategoriaController');
@@ -145,8 +158,6 @@ Route::middleware(['auth'])->group(function(){
     Route::get('getCategorias', function(){ return \App\Categoria::orderBy('name', 'asc')->get(); });
     Route::get('getClientes','UtilidadesController@clientesSelect');
     Route::get('getFormClientes', function(){ return view('cliente.forms.form'); });
-    Route::get('comandas/getVentaComanda/{id}', 'ComandaController@getComanda');
-    Route::get('pedido/getVentaPedido/{id}', 'PedidoController@getPedido');
     Route::post('descuento', 'PedidoController@descuento');
     Route::get('unique/{nombre}', function($nombre){ return \App\Producto::where('name','=',$nombre)->get(); });
     Route::get('getUnidades', function(){ return \App\Unidad::all(); });
@@ -161,4 +172,15 @@ Route::middleware(['auth'])->group(function(){
     Route::get('roles/{role}', 'RoleController@show')->name('roles.show')->middleware('permission:roles.show');
     Route::delete('roles/{role}', 'RoleController@destroy')->name('roles.destroy')->middleware('permission:roles.destroy');
     Route::get('roles/{role}/edit', 'RoleController@edit')->name('roles.edit')->middleware('permission:roles.edit');
+
+    //VueJS
+    Route::get('detalleVenta/{id}','UtilidadesController@getDetails');
+    Route::get('comandas/getClientes',function(){ return \App\Cliente::all(); });
+    Route::post('comandas/storeDetail','ComandaController@storeDetail')->name('comanda.storeDetail');
+    Route::post('comandas/clienteNew','UtilidadesController@clienteNew')->name('comanda.clienteNew');
+    Route::delete('comandas/deleteDetail/{id}','ComandaController@deleteDetail')->name('comanda.deleteDetail');
+    Route::put('comandas/updateCantidad/{id}','ComandaController@updateCantidad')->name('comanda.updateCantidad');
+    Route::put('comandas/updateIngs/{id}','ComandaController@updateIngs')->name('comanda.updateIngs');
+    Route::put('comandas/updateCliente/{id}','ComandaController@updateCliente')->name('comanda.updateCliente');
+    Route::put('comandas/saveData/{id}','ComandaController@saveData')->name('comanda.saveData');
 });

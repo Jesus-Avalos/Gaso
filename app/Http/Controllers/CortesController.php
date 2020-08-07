@@ -85,6 +85,17 @@ class CortesController extends Controller
         return view('cortes.ventas');
     }
 
+    public function updateDate(Request $request, $id){
+        switch ($request->tipo) {
+            case 'ventas': $objeto = Venta::find($id); break;
+            case 'compras': $objeto = Compra::find($id); break;
+            case 'abonos': $objeto = Credito::find($id); break;
+        }
+            $objeto->created_at = $request->date;
+        $objeto->update();
+        return 'Listo';
+    }
+
     public function getVentasCortes()
     {
         return Venta::where('status','=','Exitosa')->whereNull('corte_id')->orderBy('id','DESC')->get();
@@ -92,17 +103,23 @@ class CortesController extends Controller
 
     public function getComprasCortes()
     {
-        return Compra::where('status','=','Exitosa')
+        return  Compra::where('status','=','Exitosa')
                     ->join('proovedores AS p','p.id','=','compras.proovedor_id')
                     ->whereNull('corte_id')
                     ->select('compras.*','p.nombre')
-                    ->orderBy('id','DESC')
+                    ->get();
+    }
+
+    public function getAbonosCortes(){
+        return  Credito::join('clientes AS c','c.id','=','credito.cliente_id')
+                    ->whereNull('corte_id')
+                    ->select('credito.*','c.nombre')
                     ->get();
     }
 
     public function getCortes ()
     {
-        return Corte::orderBy('id','DESC')->get();
+        return  Corte::orderBy('id','DESC')->get();
     }
 
     public function show($id)

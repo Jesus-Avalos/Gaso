@@ -1,8 +1,15 @@
 <template>
     <tr>
         <td>
+            <button class="btn btn-sm btn-secondary" type="button" data-target=".detailModal" data-toggle="modal" @click="detailUp"><i class="fas fa-bars"></i></button>
+            <button class="btn btn-sm btn-danger" @click="deleteRow" type="button"><i class="fas fa-trash"></i></button>
+        </td>
+        <td>
             <input type="hidden" name="inventario_id[]" :value="ingId.id">
             {{ ingId.nombre }}
+        </td>
+        <td>
+            {{ ingId.nameU }}
         </td>
         <td>
             <input type="number" min="1" step="any" name="cantidad[]" :id="'cant'+ingId" class="form-control" @blur="validaCero" @input="cantidad = $event.target.value" :value="cantidad">
@@ -13,9 +20,6 @@
         <td>
             <input type="hidden" name="subtotal[]" :value="subtotal" class="subtotales">
             $ {{ subtotal }}
-        </td>
-        <td>
-            <button class="btn btn-sm btn-danger" @click="deleteRow" type="button"><i class="fas fa-trash"></i></button>
         </td>
     </tr>
 </template>
@@ -36,11 +40,14 @@ import Vuex from 'vuex';
             fcantidad(cant){
                 this.cantidad = cant;
             },
+            detailUp(){
+                this.$emit('detailUp',this.ingId);
+            },
             validaCero(){
                 if(this.cantidad == ''){this.cantidad = 1}
             },
             deleteRow(){
-                this.$emit('delete',this.ingId);
+                this.$emit('delete',this.ind);
             },
             chgSub(){
                 this.$emit('fTotal');

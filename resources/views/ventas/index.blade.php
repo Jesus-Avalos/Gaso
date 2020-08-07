@@ -21,6 +21,7 @@
 						<th>Mesa</th>
 						<th>Tipo pago</th>
 						<th>Total</th>
+						<th>Fecha</th>
 						<th>Status</th>
 						<th><i class="fa fa-wrench"></i></th>
 					</tr>
@@ -36,6 +37,7 @@
 							<td>{{ ($venta->mesa != '') ? $venta->mesa : 'No aplica' }}</td>
 							<td>{{$venta->tipoPago}}</td>
 							<td>$ {{$venta->total}}</td>
+							<td>{{ $venta->created_at }}</td>
 							<td><small class="label label-{{$tipo}}">{{$venta->status}}</small></td>
 							<td>
 								{{ link_to_route('venta.show', $title = "", $parameters = [$venta->id], $attributes = ["class"=>"btn fa fa-bars btn-primary btn-sm","title"=>"Detalle"]) }}

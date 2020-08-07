@@ -4,6 +4,7 @@ subProductos = 0;
 descProductos = 0;
 totalProductos = 0;
 cantArray = [];
+arrayStock = [];
 swIng = false;
 
 $(document).ready(function() {
@@ -34,6 +35,8 @@ function showIng(item){
 }
 
 function addProducto(id, stock){
+	var arrayStock = getStockArray(id);
+	var stock = stock - arrayStock;
 	if(stock > 0){
 		$.get('/getProducto/' + id, function(data){
 			$("#listCarga").append(`
@@ -79,6 +82,7 @@ function addProducto(id, stock){
 			`);
 
 			faddArrayCant(data[0].id, contProductos, 1);
+			faddStock(data[0].id,1);
 
 			subArray[contProductos] = data[0].precio_venta;
 
@@ -90,6 +94,22 @@ function addProducto(id, stock){
 		});
 	}else{
 		alert('Producto insuficiente!!');
+	}
+}
+
+function faddStock(id,cant){
+	if('id'+id in arrayStock){
+		arrayStock['id'+id] += cant;
+	}else{
+		arrayStock['id'+id] = cant;
+	}
+}
+
+function getStockArray(id){
+	if('id'+id in arrayStock){
+		return arrayStock['id'+id];
+	}else{
+		return 0;
 	}
 }
 

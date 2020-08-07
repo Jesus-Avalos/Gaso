@@ -45,18 +45,17 @@ class CobroController extends Controller
 				if ($tipoPago == 'Credito') {
 					$adelanto = $request->adelanto;
 					if($adelanto > 0){
-						$credito = Credito::create(['total_pago'=>$adelanto,'venta_id'=>$venta->id]);
+						$credito = Credito::create(['total_pago'=>$adelanto,'cliente_id'=>$venta->cliente_id]);
 						$empresa = Empresa::find(1);
 							$empresa->ingresos += $credito->total_pago;
 						$empresa->update();
 					}
-					$venta->status = ($adelanto == $venta->total) ? 'Exitosa' : 'Credito';
 				}else{
-					$venta->status = 'Exitosa';
 					$empresa = Empresa::find(1);
 						$empresa->ingresos += $venta->total;
 					$empresa->update();
 				}
+				$venta->status = 'Exitosa';
 				$venta->tipoPago = $tipoPago;
 				$venta->update();
 			DB::commit();

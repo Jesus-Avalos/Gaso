@@ -31,7 +31,7 @@
 								<div class="box box-{{ $color }} box-solid">
 								<div class="box-body bg-{{ $color }}">
 									@if($mesa->status != 2)
-										<a href="{{ route('comandas.'.$f, $mesa->id) }}">
+										<a href="{{ route('comandas.show', $mesa->id) }}">
 											<img src="{{ asset('/storage/mesa.png') }}" class="img-fluid" alt="Responsive image">
 										</a>
 									@else

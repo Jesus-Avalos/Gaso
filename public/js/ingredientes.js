@@ -21,11 +21,11 @@ function agregaIng(){
 		}else {
 
 			var fila = 	'<tr id="fila'+id+'" class="ingsList">' + 
-							'<input type="hidden" name="ingredientes_id[]" value="'+id+'">' + 
+							'<input type="hidden" name="ingredientes_id[]" class="ings_id" value="'+id+'">' + 
 							'<input type="hidden" id="precioUnit'+id+'" value="'+precio+'">' +
 							'<td>'+nombre+'</td>' +
 							'<td>' +
-								'<input type="number" min="1" name="porciones[]" value="'+porciones+'" id="porcionInp'+id+'" class="text-center" onkeyup="validarOne(this); chgPorcion('+id+')">' +
+								'<input type="number" min="1" name="porciones[]" step="any" value="'+porciones+'" id="porcionInp'+id+'" class="text-center" onkeyup="validarOne(this); chgPorcion('+id+')">' +
 							'</td>' +
 							'<td>' +
 								'<input type="hidden" id="precioInp'+id+'" name="precio[]" value="'+precioTotal+'">' +

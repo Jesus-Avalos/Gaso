@@ -52,17 +52,17 @@ async function fprintProductos(data){
 		var stock = await fcalculaStock(data[i].id);
 		if(stock > 0){
 			cadena +=   `<div class="col-6 col-md-3">
-						<div class="box box-primary box-solid">
-							<div class="box-body" style="padding: 0px;">
-								<a href="#" onclick="addProducto(${data[i].id},${stock})">
-									<img src="${APP_URL}/storage/productos/${data[i].url}" style="width: 100%; height: 100px;">
-								</a>
+							<div class="box box-primary box-solid">
+								<div class="box-body" style="padding: 0px;">
+									<a href="#" onclick="addProducto(${data[i].id},${stock})">
+										<img src="${APP_URL}/storage/productos/${data[i].url}" style="width: 100%; height: 100px;">
+									</a>
+								</div>
+								<div class="box-header" align="center" style="padding: 0px;">
+									${data[i].name}
+								</div>
 							</div>
-							<div class="box-header" align="center" style="padding: 0px;">
-								${data[i].name}
-							</div>
-						</div>
-					</div>`;
+						</div>`;
 		}
 	}
     $("#content01").append(cadena);

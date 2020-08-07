@@ -43,7 +43,7 @@
 								@include('pedido.modals.cancelar')
 								<tr>
 									<td>
-										{!! link_to_route('pedido.edit', $title = "", $parameters = [$venta->id], $attributes = ['class'=>'btn btn-sm btn-info fas fa-edit']) !!}
+										{!! link_to_route('pedido.show', $title = "", $parameters = [$venta->id], $attributes = ['class'=>'btn btn-sm btn-info fas fa-edit']) !!}
 									</td>
 									<td>{{ $venta->id }}</td>
 									<td>{{ $venta->name }}</td>

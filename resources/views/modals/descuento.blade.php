@@ -8,7 +8,6 @@
         </button>
       </div>
       <div class="modal-body" style="margin: 5%;" align="center">
-          {{Form::token()}}
           <label for="desc">Descuento: </label>
           {{ Form::number('desc', 0, ['class' => 'form-control','min'=>'0','max'=>'0','autocomplete'=>'off']) }}
       </div>

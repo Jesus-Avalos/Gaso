@@ -1,11 +1,16 @@
 require('./bootstrap');
 import Vue from 'vue';
 import Vuex from 'vuex';
-import StoreData from './store.js';
+import StoreData from './store/store.js';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store(StoreData);
+
+//ORDEN
+Vue.component('principal-component', require('./components/comandas/Principal.vue').default);
+Vue.component('comanda-pay', require('./components/comandas/Pay.vue').default);
+Vue.component('comanda-cliente', require('./components/comandas/clientes/Cliente.vue').default);
 
 //MESAS
 Vue.component('mesas-component', require('./components/mesas/Mesas.vue').default);
@@ -31,6 +36,7 @@ Vue.component('table-cobro-component', require('./components/cobros/TableCompone
 Vue.component('reporte-component', require('./components/reportes/ReportesComponent.vue').default);
 Vue.component('venta-component', require('./components/reportes/VentasComponent.vue').default);
 Vue.component('fecha-component', require('./components/reportes/FechasComponent.vue').default);
+Vue.component('productos-component', require('./components/reportes/productos/Productos.vue').default);
 Vue.component('reporte-table-component', require('./components/reportes/TableComponent.vue').default);
 //GRAPHS
 Vue.component('graphs-component', require('./components/reportes/graphs/GraphsComponent.vue').default);
@@ -40,6 +46,7 @@ Vue.component('pie-graph', require('./components/reportes/graphs/PieGraph.vue').
 //CORTES
 Vue.component('ventas-cortes-component', require('./components/cortes/VentasCortesComponent.vue').default);
 Vue.component('compras-cortes-component', require('./components/cortes/ComprasCortesComponent.vue').default);
+Vue.component('abonos-cortes-component', require('./components/cortes/AbonosCortesComponent.vue').default);
 Vue.component('cortes-component', require('./components/cortes/CortesComponent.vue').default);
 Vue.component('table-cortes-component', require('./components/cortes/TableCortesComponent.vue').default);
 Vue.component('boxes-component', require('./components/cortes/BoxesComponent.vue').default);

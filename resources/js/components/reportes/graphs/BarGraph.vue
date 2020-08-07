@@ -38,7 +38,6 @@ import BarChart from './BarChart.js'
     methods: {
       fillData (opcion) {
         axios.get(`/reportes/graphs/sales/${opcion}`).then((response)=>{
-            console.log(response.data.labels);
             this.datacollection = {
             labels: response.data.labels,
             datasets: [

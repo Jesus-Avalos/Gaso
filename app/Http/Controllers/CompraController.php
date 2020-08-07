@@ -47,7 +47,10 @@ class CompraController extends Controller
     }
     public function getIng($id)
     {
-        $ing = Inventario::find($id);
+        $ing = DB::table('inventario as i')
+                    ->join('unidades as u','u.id','=','i.unidad')
+                    ->where('i.id','=',$id)
+                    ->select('i.*','u.name AS nameU')->get();
         return $ing;
     }
 

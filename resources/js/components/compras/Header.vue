@@ -38,15 +38,7 @@ export default {
         agregarIng(){
             var id = $('#ing_id').val();
             if(id != 0){
-                if(this.existentes.indexOf(id) == -1){
-                    this.existentes.push(id);
-                    axios.get('/compra/getIng/'+id).then(response => {
-                        const datos = response.data;
-                        this.$emit('new',datos);
-                    });
-                }else{
-                    alert('El ingrediente ya fue añadido');
-                }
+                this.$emit('addNew',id);
             }else{
                 alert('Selecciona un artículo');
             }

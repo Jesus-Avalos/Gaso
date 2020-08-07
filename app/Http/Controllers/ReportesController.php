@@ -24,6 +24,11 @@ class ReportesController extends Controller
     	return view('reportes.compras');
     }
 
+    public function productos()
+    {
+    	return view('reportes.productos');
+    }
+
     public function graphs()
     {
         return view('reportes.graphs');
@@ -130,6 +135,18 @@ class ReportesController extends Controller
             WHERE DATE(created_at) BETWEEN "' . $request->fecha1 . '" AND "' . $request->fecha2 . '" 
             ORDER BY c.id DESC'
         );
+    }
+
+    public function getProductosByDates(Request $request){
+        return  DB::select('
+                    SELECT SUM(dv.cantidad) AS ventasNum, p.name
+                    FROM ventas AS v
+                    INNER JOIN detalle_ventas AS dv ON dv.venta_id = v.id
+                    INNER JOIN productos as p ON p.id = dv.producto_id
+                    WHERE DATE(v.created_at) BETWEEN "' . $request->fecha1 . '" AND "' . $request->fecha2 . '" 
+                    GROUP BY dv.producto_id
+                    ORDER BY ventasNum DESC'
+                );
     }
     
     public function dataPDF(Request $request)

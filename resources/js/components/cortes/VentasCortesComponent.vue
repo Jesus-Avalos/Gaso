@@ -7,24 +7,27 @@
             <thead class="bg-dark">
                 <tr>
                     <th>Folio</th>
+                    <th>Fecha</th>
                     <th>Tipo operación</th>
+                    <th>Tipo pago</th>
                     <th>Status</th>
                     <th>Total</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="venta in ventas" :key="venta.id">
-                    <td>{{ venta.id }}</td>
-                    <td>{{ venta.tipo }}</td>
-                    <td>{{ venta.status }}</td>
-                    <td>{{ venta.total }}</td>
-                </tr>
+                <Venta 
+                    v-for="(venta,index) in ventas" 
+                    :key="venta.id" 
+                    :index="index" 
+                    :venta="venta"
+                    @updateDate="updateDate" />
             </tbody>
         </table>
     </div>
 </template>
 
 <script>
+import Venta from './Venta.vue'
 export default {
     data () {
         return {
@@ -38,6 +41,7 @@ export default {
         initDT () {
             $(function(){
                     $('.emptyTable').DataTable({
+                    "order": [[ 0, "desc" ]],
                     "autoWidth" : false,
                     "info"      : false,
                     "searching" : false,
@@ -50,7 +54,13 @@ export default {
                 this.ventas = response.data;
                 this.initDT();
             })
+        },
+        updateDate(params){
+            this.ventas[params.index].created_at = params.date;
         }
+    },
+    components : {
+        Venta
     }
 
 }

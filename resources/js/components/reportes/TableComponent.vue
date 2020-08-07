@@ -5,6 +5,7 @@
 				<th><i class="fa fa-wrench"></i></th>
 				<th>Folio</th>
 				<th>Tipo</th>
+				<th>Total</th>
 				<th>Fecha venta</th>
 				<th>Estado</th>
 			</tr>
